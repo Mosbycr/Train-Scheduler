@@ -16,7 +16,7 @@ $("#add-train-btn").on("click", function(event){
 
     var trainName = $("#train-name-input").val().trim();
     var destination = $("#destination-input").val().trim();
-    var trainTime = $("#time-input").val().trim();
+    var trainTime = moment($("#time-input").val().trim(), "HH:mm").format("X");
     var frequency = $("#howOften-input").val().trim();
 
     var newTrain = {
@@ -51,4 +51,7 @@ database.ref().on("child_added", function (snap) {
     console.log(destination);
     console.log(trainTime);
     console.log(frequency);
+
+    var timeChange = moment.unix(trainTime).format("hh:mm A");
+    console.log(timeChange);
 });
