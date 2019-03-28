@@ -32,4 +32,23 @@ $("#add-train-btn").on("click", function(event){
     console.log(newTrain.place);
     console.log(newTrain.time);
     console.log(newTrain.rate);
+
+    $("#train-name-input").val("");
+    $("#destination-input").val("");
+    $("#time-input").val("");
+    $("#howOften-input").val("");
+});
+
+database.ref().on("child_added", function (snap) {
+    console.log(snap.val());
+
+    var trainName = snap.val().name;
+    var destination = snap.val().place;
+    var trainTime = snap.val().time;
+    var frequency = snap.val().rate;
+
+    console.log(trainName);
+    console.log(destination);
+    console.log(trainTime);
+    console.log(frequency);
 });
