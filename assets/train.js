@@ -83,44 +83,17 @@ database.ref().on("child_added", function(snap) {
   
   var nextTrainTime = moment(nextTime).format("hh:mm a");
   console.log(nextTrainTime);
-  //var timeConvert = moment(timeChange, "HHmm")
 
-  // function trainNew() {
-  //   var rate = parseInt(frequency);
-  //   console.log(rate);
+  var newRow = $("<tr>").append(
+    $("<td>").text(trainName),
+  $("<td>").text(destination),
+  $("<td>").text(frequency),
+  $("<td>").text(nextTrainTime),
+    $("<td>").text(minutesAway),
+  );
 
-  //   // First train of the day is at 3:30 AM
-  //   var firstTime = timeChange;
-  //   console.log(firstTime);
-
-  //   // Get the current time
-  //   var currentTime = moment().format("hh:mm");
-  //   console.log(currentTime);
-
-  //   var nextTrain;
-
-  //   // If the first time is in the future, set next train to then
-  //   if (firstTime > currentTime) {
-  //     nextTrain = currentTime;
-  //   } else {
-  //     // Otherwise, get minutes past first time
-  //     var minutesPast = currentTime.diff(firstTime, "minutes");
-  //     console.log(minutesPast);
-  //     // Find the result of minutesPast % frequency
-  //     var remainder = minutesPast % frequency;
-  //     console.log(remainder);
-  //     // Subtract the frequency from the remainder
-  //     var minutesTilNextTrain = remainder - frequency;
-  //     console.log(minutesTilNextTrain);
-  //     // Set nextTrain to the currentTime + `minutesTilNextTrain` minutes
-  //     nextTrain = currentTime.add(minutesTilNextTrain, "minutes");
-  //     console.log(nextTrain);
-  //   }
+  $("#train-table > tbody").append(newRow);
   
-
-  // Print and format the new train time
-  // console.log("Next Train Arrival Time:", moment(nextTrain).format("hh:mm"));
- // }
-
- // trainNew();
+}, function (errorObject) {
+  console.log("The read failed: " + errorObject.code);
 });
