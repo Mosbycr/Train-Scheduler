@@ -14,21 +14,10 @@ var database = firebase.database();
 $("#add-train-btn").on("click", function(event) {
   event.preventDefault();
 
-  var trainName = $("#train-name-input")
-    .val()
-    .trim();
-  var destination = $("#destination-input")
-    .val()
-    .trim();
-  var trainTime = moment(
-    $("#time-input")
-      .val()
-      .trim(),
-    "HH:mm"
-  ).format("X");
-  var frequency = $("#howOften-input")
-    .val()
-    .trim();
+  var trainName = $("#train-name-input").val().trim();
+  var destination = $("#destination-input").val().trim();
+  var trainTime = moment($("#time-input").val().trim(),"HH:mm").format("X");
+  var frequency = $("#howOften-input").val().trim();
 
   var newTrain = {
     name: trainName,
@@ -39,61 +28,45 @@ $("#add-train-btn").on("click", function(event) {
 
   database.ref().push(newTrain);
 
-  // console.log(newTrain.name);
-  // console.log(newTrain.place);
-  // console.log(newTrain.time);
-  // console.log(newTrain.rate);
-
   $("#train-name-input").val("");
   $("#destination-input").val("");
   $("#time-input").val("");
   $("#howOften-input").val("");
 });
 
-database.ref().on("child_added", function(snap) {
-  console.log(snap.val());
+database.ref().on(
+  "child_added",
+  function(snap) {
+    var trainName = snap.val().name;
+    var destination = snap.val().place;
+    var trainTime = snap.val().time;
+    var frequency = snap.val().rate;
 
-  var trainName = snap.val().name;
-  var destination = snap.val().place;
-  var trainTime = snap.val().time;
-  var frequency = snap.val().rate;
+    var currentTime = moment();
 
-  console.log(trainName);
-  console.log(destination);
-  console.log(trainTime);
-  console.log(frequency);
+    var trainTimeChange = moment(trainTime, "hh:mm").subtract(1, "years");
 
-  var currentTime = moment();
-  console.log(currentTime);
+    var diffTime = moment().diff(moment(trainTimeChange), "minutes");
 
-  var trainTimeChange = moment(trainTime,"hh:mm").subtract(1, "years");
-  console.log(trainTimeChange);
+    var remainder = diffTime % frequency;
 
-  var diffTime = moment().diff(moment(trainTimeChange), "minutes");
-  console.log("difference in time " + diffTime);
+    var minutesAway = frequency - remainder;
 
-  var remainder = diffTime % frequency;
-       console.log(remainder);
+    var nextTime = moment().add(minutesAway, "minutes");
 
-  var minutesAway = frequency - remainder;
-  console.log("minutes until train: " + minutesAway);
+    var nextTrainTime = moment(nextTime).format("hh:mm a");
 
-  var nextTime = moment().add(minutesAway, "minutes");
-  console.log("arrival time: " + moment(nextTime).format("hh:mm"));
-  
-  var nextTrainTime = moment(nextTime).format("hh:mm a");
-  console.log(nextTrainTime);
+    var newRow = $("<tr>").append(
+      $("<td>").text(trainName),
+      $("<td>").text(destination),
+      $("<td>").text(frequency + " minutes"),
+      $("<td>").text(nextTrainTime),
+      $("<td>").text(minutesAway)
+    );
 
-  var newRow = $("<tr>").append(
-    $("<td>").text(trainName),
-  $("<td>").text(destination),
-  $("<td>").text(frequency),
-  $("<td>").text(nextTrainTime),
-    $("<td>").text(minutesAway),
-  );
-
-  $("#train-table > tbody").append(newRow);
-  
-}, function (errorObject) {
-  console.log("The read failed: " + errorObject.code);
-});
+    $("#train-table > tbody").append(newRow);
+  },
+  function(errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  }
+);
