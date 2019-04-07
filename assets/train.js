@@ -44,6 +44,11 @@ database.ref().on(
 
     var currentTime = moment();
 
+    if(trainTime > currentTime){
+      nextTrainTime = currentTime;
+    }
+    else {
+
     var trainTimeChange = moment(trainTime, "hh:mm").subtract(1, "years");
 
     var diffTime = moment().diff(moment(trainTimeChange), "minutes");
@@ -55,6 +60,8 @@ database.ref().on(
     var nextTime = moment().add(minutesAway, "minutes");
 
     var nextTrainTime = moment(nextTime).format("hh:mm a");
+
+    };
 
     var newRow = $("<tr>").append(
       $("<td>").text(trainName),
