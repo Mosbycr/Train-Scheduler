@@ -19,49 +19,45 @@ $("#add-train-btn").on("click", function(event) {
   var trainTime = moment($("#time-input").val().trim(),"HH:mm").format("X");
   var frequency = $("#howOften-input").val().trim();
 
-  var newTrain = {
-    name: trainName,
-    place: destination,
-    time: trainTime,
-    rate: frequency
-  };
+  if (
+    trainName === null || trainName === "" ||
+    destination === null || destination === "" ||
+    trainTime == null || trainTime === "" ||
+    frequency == null || frequency === ""
+  ) {
 
-  database.ref().push(newTrain);
+    alert("All fields must be filled out before submitting.");
+  } else {
 
-  $("#train-name-input").val("");
-  $("#destination-input").val("");
-  $("#time-input").val("");
-  $("#howOften-input").val("");
+    var newTrain = {
+      name: trainName,
+      place: destination,
+      time: trainTime,
+      rate: frequency
+    };
+
+    database.ref().push(newTrain);
+
+    $("#train-name-input").val("");
+    $("#destination-input").val("");
+    $("#time-input").val("");
+    $("#howOften-input").val("");
+  }
 });
 
-database.ref().on(
-  "child_added",
-  function(snap) {
+database.ref().on("child_added",function(snap) {
     var trainName = snap.val().name;
     var destination = snap.val().place;
     var trainTime = snap.val().time;
     var frequency = snap.val().rate;
 
-    var currentTime = moment();
-
-    if(trainTime > currentTime){
-      nextTrainTime = currentTime;
-    }
-    else {
-
+    // Push first train time back 1 year so it always comes before current time
     var trainTimeChange = moment(trainTime, "hh:mm").subtract(1, "years");
-
     var diffTime = moment().diff(moment(trainTimeChange), "minutes");
-
     var remainder = diffTime % frequency;
-
     var minutesAway = frequency - remainder;
-
     var nextTime = moment().add(minutesAway, "minutes");
-
     var nextTrainTime = moment(nextTime).format("hh:mm a");
-
-    };
 
     var newRow = $("<tr>").append(
       $("<td>").text(trainName),
@@ -73,6 +69,7 @@ database.ref().on(
 
     $("#train-table > tbody").append(newRow);
   },
+
   function(errorObject) {
     console.log("The read failed: " + errorObject.code);
   }
